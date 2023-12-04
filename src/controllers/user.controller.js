@@ -13,6 +13,7 @@ exports.getUsers = async (req, res) => {
     res.status(500).json({
       status: 0,
       message: "Ocurrió un error desconocido.",
+      users: [],
     });
   }
 };
@@ -25,19 +26,20 @@ exports.getUserByEmail = async (req, res) => {
       res.status(200).json({
         status: 1,
         message: "Usuario encontrado",
-        user,
+        users: [user],
       });
     } else {
       res.status(404).json({
         status: 0,
         message: "Usuario no encontrado.",
-        user: null,
+        users: [],
       });
     }
   } catch (error) {
     res.status(500).json({
       status: 0,
       message: "Ocurrió un error desconocido..",
+      users: [],
     });
   }
 };
@@ -50,7 +52,7 @@ exports.createUser = async (req, res) => {
       res.status(400).json({
         status: 0,
         message: "Faltan parámetros.",
-        user: null,
+        users: [],
       });
     } else {
       const userFound = await User.findOne({
@@ -60,6 +62,7 @@ exports.createUser = async (req, res) => {
         res.status(200).json({
           status: 1,
           message: "El username y/o correo ya existen.",
+          users: [],
         });
       } else {
         const user = await User.create({
@@ -72,7 +75,7 @@ exports.createUser = async (req, res) => {
         res.status(200).json({
           status: 1,
           message: "Usuario creado correctamente.",
-          user,
+          users: [user],
         });
       }
     }
@@ -80,6 +83,7 @@ exports.createUser = async (req, res) => {
     res.status(500).json({
       status: 0,
       message: "Ocurrió un error desconocido.",
+      user: null,
     });
   }
 };
@@ -93,24 +97,26 @@ exports.updateUserByEmail = async (req, res) => {
       res.status(400).json({
         status: 0,
         message: "Faltan parámetros.",
-        user: null,
+        users: [],
       });
     } else {
       // Se requiere encriptar la contraseña
       const salt = await bcrypt.genSalt(8);
-      await User.findOneAndUpdate(
+      const user = await User.findOneAndUpdate(
         { email },
         { names, lastNames, password: await bcrypt.hash(password, salt) }
       );
       res.status(200).json({
         status: 1,
         message: "Usuario actualizado correctamente.",
+        users: [user],
       });
     }
   } catch (error) {
     res.status(500).json({
       status: 0,
       message: "Ocurrió un error desconocido.",
+      users: [],
     });
   }
 };
@@ -124,17 +130,20 @@ exports.deleteUserByEmail = async (req, res) => {
       res.status(200).json({
         status: 1,
         message: "Usuario eliminado correctamente.",
+        users: [],
       });
     } else {
       res.status(404).json({
         status: 0,
         message: "Usuario no encontrado.",
+        users: [],
       });
     }
   } catch (error) {
     res.status(500).json({
       status: 0,
       message: "Ocurrió un error desconocido.",
+      users: [],
     });
   }
 };
